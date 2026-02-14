@@ -1,1 +1,70 @@
+<script>
+let icon = document.getElementById("icon");
+let menu = document.getElementById("menu");
+let sound = document.getElementById("openSound");
 
+let startX, startY;
+let offsetX, offsetY;
+let isDragging = false;
+let touchStartTime = 0;
+
+/* ===== TOUCH START ===== */
+icon.addEventListener("touchstart", function(e){
+  touchStartTime = new Date().getTime();
+  isDragging = true;
+
+  startX = e.touches[0].clientX;
+  startY = e.touches[0].clientY;
+
+  offsetX = startX - icon.offsetLeft;
+  offsetY = startY - icon.offsetTop;
+});
+
+/* ===== TOUCH MOVE ===== */
+document.addEventListener("touchmove", function(e){
+  if(isDragging){
+    icon.style.left = (e.touches[0].clientX - offsetX) + "px";
+    icon.style.top = (e.touches[0].clientY - offsetY) + "px";
+  }
+});
+
+/* ===== TOUCH END ===== */
+document.addEventListener("touchend", function(e){
+  isDragging = false;
+
+  let touchDuration = new Date().getTime() - touchStartTime;
+
+  // Se foi toque rápido (menos de 200ms)
+  if(touchDuration < 200){
+    abrirMenu();
+  }
+
+  grudarNaBorda();
+});
+
+/* ===== ABRIR MENU ===== */
+function abrirMenu(){
+  menu.classList.toggle("active");
+
+  // Vibração (se suportado)
+  if(navigator.vibrate){
+    navigator.vibrate(50);
+  }
+
+  if(sound){
+    sound.play();
+  }
+}
+
+/* ===== GRUDAR NA BORDA ===== */
+function grudarNaBorda(){
+  let screenWidth = window.innerWidth;
+  let iconCenter = icon.offsetLeft + (icon.offsetWidth / 2);
+
+  if(iconCenter < screenWidth / 2){
+    icon.style.left = "10px";
+  } else {
+    icon.style.left = (screenWidth - icon.offsetWidth - 10) + "px";
+  }
+}
+</script>
